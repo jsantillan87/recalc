@@ -1,7 +1,6 @@
 const $display = document.querySelector('.display')
 const $buttons = document.querySelector('.buttons')
 
-
 const operations = ['-', '*', '+', '^'];
 
 let currentDisplay = "";
@@ -14,12 +13,6 @@ $buttons.addEventListener('click', async(e) => {
     const nextAction = e.target.name
 
     if (nextAction === "=") {
-
-        //Verificar si currentDisplay está vacío
-        if (currentDisplay === "") {
-            return;
-        }
-        
         const [firstArg, secondArg] = currentDisplay.split(operation)
 
         let result;
