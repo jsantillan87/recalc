@@ -49,8 +49,51 @@ test.describe('test', () => {
         expect(historyEntry.result).toEqual(70)
     });
 
-    test('Deberia poder realizar una multiplicacion', async({ page }) => {
-        await page.goto('./');
+
+  test('Deberia poder realizar una suma', async ({ page }) => {
+    await page.goto('./');
+
+    await page.getByRole('button', { name: '5' }).click()
+    await page.getByRole('button', { name: '5' }).click()
+    await page.getByRole('button', { name: '+' }).click()
+    await page.getByRole('button', { name: '5' }).click()
+
+    const [response] = await Promise.all([
+      page.waitForResponse((r) => r.url().includes('/api/v1/add/')),
+      page.getByRole('button', { name: '=' }).click()
+    ]);
+
+    const { result } = await response.json();
+    expect(result).toBe(60);
+
+    await expect(page.getByTestId('display')).toHaveValue(/60/)
+
+    const operation = await Operation.findOne({
+      where: {
+        name: "ADD"
+      }
+    });
+
+    const historyEntry = await History.findOne({
+      where: { OperationId: operation.id }
+    })
+
+    expect(historyEntry.firstArg).toEqual(55)
+    expect(historyEntry.secondArg).toEqual(5)
+    expect(historyEntry.result).toEqual(60)
+  });
+
+  test('No debería mostrar “undefined” cuando se hace click en el botón “=”', async ({ page }) => {
+    await page.goto('./');
+  
+    await page.getByRole('button', { name: '=' }).click();
+
+    //Verifica que el display esté vacío  
+    await expect(page.getByTestId('display')).toBeEmpty();
+  });
+
+  test('Deberia poder realizar una multiplicacion', async ({ page }) => {
+    await page.goto('./');
 
         await page.getByRole('button', { name: '1' }).click()
         await page.getByRole('button', { name: '0' }).click()
